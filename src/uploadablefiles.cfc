@@ -313,6 +313,15 @@
 			<cfthrow type="Custom" message="Invalid file type">
 		</cfif>
 		
+		<!--- fix filename to be compatible with any server --->
+		<cfset loc.fixFilename = loc.cffile["serverFileName"]>
+		<cfset loc.fixFilename = ReReplace(loc.fixFilename, "[[:space:]]", "_", "ALL")>		<!--- Remove whitespace --->
+		<cfset loc.fixFilename = ReReplace(loc.fixFilename, "%..", "_", "ALL")>			<!--- Remove encodings --->
+		<!--- (Finally) Remove any unreasonable characters --->
+		<cfset loc.fixFilename = ReReplaceNoCase(loc.fixFilename, "[^a-z0-9-\.]", "_", "ALL")>
+		<cfset loc.cffile["serverFileName"] = loc.fixFilename>
+		<cfset loc.cffile["serverFile"] = listappend(loc.cffile["serverFileName"], loc.cffile["serverFileExt"], ".")>
+		
 		<!--- full path to move the file to --->
 		<cfset loc.destination = ListChangeDelims(loc.destination, "/", "\")>
 		<cfset loc.finaldestination = listappend(loc.destination, loc.cffile["serverFile"], "/")>
